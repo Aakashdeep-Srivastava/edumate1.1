@@ -19,50 +19,59 @@ EduMate reimagines education through an AI-powered 3D avatar platform that makes
 
 ### System Architecture Diagram
 ```mermaid
-graph TB
-    subgraph Frontend
-        UI[User Interface]
-        THR[Three.js Rendering]
-        PWA[Progressive Web App]
+flowchart TD
+    subgraph Frontend[Frontend Layer]
+        direction TB
+        UI[User Interface]:::frontend
+        THR[Three.js Rendering]:::frontend
+        PWA[Progressive Web App]:::frontend
     end
 
-    subgraph Backend
-        CR[Cloud Run]
-        CF[Cloud Functions]
-        FB[Firebase]
+    subgraph Backend[Backend Services]
+        direction TB
+        CR[Cloud Run]:::backend
+        CF[Cloud Functions]:::backend
+        FB[Firebase]:::backend
     end
 
-    subgraph AI_Services
-        VP[Vertex AI Processing]
-        GP[Gemini Pro]
-        MP[MediaPipe]
+    subgraph AI[AI Services]
+        direction TB
+        VP[Vertex AI Processing]:::ai
+        GP[Gemini Pro]:::ai
+        MP[MediaPipe]:::ai
     end
 
-    subgraph Storage
-        RDB[(Realtime DB)]
-        CS[(Cloud Storage)]
-        LC[(Local Cache)]
+    subgraph DB[Storage Layer]
+        direction TB
+        RDB[(Realtime DB)]:::storage
+        CS[(Cloud Storage)]:::storage
+        LC[(Local Cache)]:::storage
     end
 
-    UI --> THR
-    UI --> PWA
-    THR --> MP
-    PWA --> LC
+    UI ==>|Renders| THR
+    UI ==>|Caches| PWA
+    THR ==>|Processes| MP
+    PWA ==>|Stores| LC
     
-    UI --> CR
-    CR --> VP
-    CR --> GP
-    CF --> FB
+    UI ==>|API Calls| CR
+    CR ==>|ML Tasks| VP
+    CR ==>|NLP Tasks| GP
+    CF ==>|Events| FB
     
-    FB --> RDB
-    FB --> CS
-    VP --> CS
-    GP --> RDB
+    FB ==>|Stores Data| RDB
+    FB ==>|Stores Files| CS
+    VP ==>|Saves Models| CS
+    GP ==>|Caches Results| RDB
 
-    style Frontend fill:#e0f7fa
-    style Backend fill:#fff3e0
-    style AI_Services fill:#f3e5f5
-    style Storage fill:#e8f5e9
+    classDef frontend fill:#00bcd4,stroke:#000,stroke-width:2px,color:#fff
+    classDef backend fill:#ff9800,stroke:#000,stroke-width:2px,color:#fff
+    classDef ai fill:#9c27b0,stroke:#000,stroke-width:2px,color:#fff
+    classDef storage fill:#4caf50,stroke:#000,stroke-width:2px,color:#fff
+
+    style Frontend fill:#00bcd4,stroke:#000,stroke-width:4px
+    style Backend fill:#ff9800,stroke:#000,stroke-width:4px
+    style AI fill:#9c27b0,stroke:#000,stroke-width:4px
+    style DB fill:#4caf50,stroke:#000,stroke-width:4px
 ```
 
 ### Frontend Stack
@@ -205,18 +214,6 @@ jobs:
 - GDPR & COPPA compliant
 - Regular security audits
 - Privacy-first data handling
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Commit changes
-4. Push to branch
-5. Open pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👥 Team
 
