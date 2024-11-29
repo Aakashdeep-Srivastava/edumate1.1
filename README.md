@@ -17,6 +17,54 @@ EduMate reimagines education through an AI-powered 3D avatar platform that makes
 
 ## 🛠️ Technical Architecture
 
+### System Architecture Diagram
+```mermaid
+graph TB
+    subgraph Frontend
+        UI[User Interface]
+        THR[Three.js Rendering]
+        PWA[Progressive Web App]
+    end
+
+    subgraph Backend
+        CR[Cloud Run]
+        CF[Cloud Functions]
+        FB[Firebase]
+    end
+
+    subgraph AI_Services
+        VP[Vertex AI Processing]
+        GP[Gemini Pro]
+        MP[MediaPipe]
+    end
+
+    subgraph Storage
+        RDB[(Realtime DB)]
+        CS[(Cloud Storage)]
+        LC[(Local Cache)]
+    end
+
+    UI --> THR
+    UI --> PWA
+    THR --> MP
+    PWA --> LC
+    
+    UI --> CR
+    CR --> VP
+    CR --> GP
+    CF --> FB
+    
+    FB --> RDB
+    FB --> CS
+    VP --> CS
+    GP --> RDB
+
+    style Frontend fill:#e0f7fa
+    style Backend fill:#fff3e0
+    style AI_Services fill:#f3e5f5
+    style Storage fill:#e8f5e9
+```
+
 ### Frontend Stack
 - **Core**: React + TypeScript with Next.js
 - **3D Rendering**: React Three Fiber, Three.js, MediaPipe
@@ -173,8 +221,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👥 Team
 
 - **Team Leader**: Aakashdeep Srivastava
+- **Strategist**: harsh Singh
 - **Problem Statement**: Tech for better Education
 
-## 📞 Support
-
-For support, please file an issue on the GitHub repository or contact the team at [team@edumate.com](mailto:team@edumate.com).
