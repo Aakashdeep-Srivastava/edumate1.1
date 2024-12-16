@@ -180,6 +180,154 @@ export const Dashboard = () => {
             </div>
           </div>
         );
+      case 'lessons':
+        return (
+          <div className="space-y-8">
+            <div className="bg-white/80 p-6 rounded-xl shadow-lg">
+              <h2 className="text-2xl font-medium text-black mb-4">Personalized Lessons</h2>
+              <p className="text-gray-700 mb-6">
+                Discover lessons tailored to your interests and career goals. Our AI-driven platform helps you find the best learning paths.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Interest-Based Learning</h3>
+                  <p className="text-gray-700">
+                    Explore topics that match your interests and passions. Our AI recommends lessons based on your preferences.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Career Planning</h3>
+                  <p className="text-gray-700">
+                    Plan your career with our AI-driven guidance. Get recommendations on courses and skills that align with your career goals.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Assistive Technologies</h3>
+                  <p className="text-gray-700">
+                    Utilize assistive technologies like screen readers, text-to-speech, and more to enhance your learning experience.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Community Support</h3>
+                  <p className="text-gray-700">
+                    Join study groups and forums to connect with peers and mentors who can support your learning journey.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'progress':
+        return (
+          <div className="space-y-8">
+            <div className="bg-white/80 p-6 rounded-xl shadow-lg">
+              <h2 className="text-2xl font-medium text-black mb-4">Track Your Progress</h2>
+              <p className="text-gray-700 mb-6">
+                Monitor your learning progress in real-time. Our platform tracks your achievements and provides insights into your learning journey.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Real-Time Tracking</h3>
+                  <p className="text-gray-700">
+                    Get real-time updates on your learning progress. Track your achievements and milestones as you complete lessons.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Skill Assessment</h3>
+                  <p className="text-gray-700">
+                    Assess your skills with our AI-driven evaluations. Earn brownie points for your progress and see how you stack up against your peers.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Accessibility Progress</h3>
+                  <p className="text-gray-700">
+                    Track your progress with accessibility tools and see how they help you achieve your learning goals.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Community Engagement</h3>
+                  <p className="text-gray-700">
+                    Engage with the community and track your contributions. Earn points for helping others and participating in discussions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'rewards':
+        return (
+          <div className="space-y-8">
+            <div className="bg-white/80 p-6 rounded-xl shadow-lg">
+              <h2 className="text-2xl font-medium text-black mb-4">Earn Rewards</h2>
+              <p className="text-gray-700 mb-6">
+                Get rewarded for your learning achievements and real-life impact. Our platform recognizes your efforts and rewards you accordingly.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Impact-Based Rewards</h3>
+                  <p className="text-gray-700">
+                    Earn rewards based on the impact you create in real life. Provide proof of your achievements and get recognized for your efforts.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Progress Weightage</h3>
+                  <p className="text-gray-700">
+                    Your progress is weighted based on your real-life impact (70%) and learning achievements (30%). Strive for excellence in both areas.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Community Contributions</h3>
+                  <p className="text-gray-700">
+                    Get rewarded for contributing to the community. Earn points for helping others, sharing resources, and participating in discussions.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Accessibility Achievements</h3>
+                  <p className="text-gray-700">
+                    Earn rewards for using accessibility tools and achieving your learning goals. Show your progress and get recognized for your efforts.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 'help':
+        return (
+          <div className="space-y-8">
+            <div className="bg-white/80 p-6 rounded-xl shadow-lg">
+              <h2 className="text-2xl font-medium text-black mb-4">Help & Support</h2>
+              <p className="text-gray-700 mb-6">
+                Get the support you need to succeed. Our platform offers a variety of resources to help you overcome challenges and achieve your learning goals.
+              </p>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Technical Support</h3>
+                  <p className="text-gray-700">
+                    Get help with technical issues and troubleshooting. Our support team is here to assist you with any problems you may encounter.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Learning Resources</h3>
+                  <p className="text-gray-700">
+                    Access a variety of learning resources, including tutorials, guides, and FAQs. Find the information you need to succeed.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Community Support</h3>
+                  <p className="text-gray-700">
+                    Connect with the community and get support from peers and mentors. Join study groups, forums, and discussions to get the help you need.
+                  </p>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-md">
+                  <h3 className="text-xl font-medium text-black mb-2">Accessibility Support</h3>
+                  <p className="text-gray-700">
+                    Get help with accessibility tools and resources. Our support team is here to assist you with any accessibility needs you may have.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
       default:
         return <div className="text-black">Loading your content...</div>;
     }
@@ -188,16 +336,16 @@ export const Dashboard = () => {
   return (
     <div className={`flex h-screen ${themeMode === 'night' ? 'bg-gray-900' : 'bg-gradient-to-b from-gray-100 to-white'}`}>
       {/* Accessible Sidebar */}
-      <div className="w-72 bg-white/80 backdrop-blur-xl shadow-lg p-4">
+      <div className="w-72 bg-blue-200 backdrop-blur-xl shadow-lg p-4">
         <div className="flex items-center space-x-3 p-4 mb-6">
           <Image
             src="/images/logo.webp"
             alt="EduMate Logo"
-            width={40}
-            height={40}
-            className="w-10 h-10"
+            width={50}
+            height={50}
+            className="w-12 h-12"
           />
-          <span className="text-xl font-medium text-black">EduMate</span>
+          <span className="text-2xl font-medium text-black">EduMate</span>
         </div>
 
         <nav className="space-y-2" role="menu">

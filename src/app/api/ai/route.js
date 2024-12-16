@@ -1,149 +1,441 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+const express = require('express');
+const router = express.Router();
+const axios = require('axios');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const { TextToSpeechClient } = require('@google-cloud/text-to-speech');
+const { authenticateRequest } = require('../middleware/auth');
 
-// Initialize Gemini Pro
-const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]);
+// API configurations
+const WIKIMEDIA_API = 'https://commons.wikimedia.org/w/api.php';
+const WIKIPEDIA_API = 'https://en.wikipedia.org/w/api.php';
 
-const elonBackground = {
-  companies: {
-    tesla: {
-      focus: "Electric vehicles and sustainable energy",
-      foundingYear: "2004 (joined in 2004)",
-      innovations: ["Electric cars", "Solar panels", "Battery storage"]
+// Learning profiles with content adaptations
+const learningProfiles = {
+  dyslexia: {
+    contentStyle: {
+      textFormatting: true,
+      simplifiedContent: true,
+      chunkingStrategy: 'basic',
+      audioSupport: true,
+      visualAids: true,
+      adaptiveLearning: true,
+      multimodalContent: true
     },
-    spacex: {
-      focus: "Space exploration and colonization",
-      foundingYear: "2002",
-      innovations: ["Reusable rockets", "Starship", "Starlink"]
-    },
-    xAI: {
-      focus: "Artificial Intelligence research",
-      foundingYear: "2023",
-      innovations: ["AI development", "Machine learning"]
-    },
-    neuralink: {
-      focus: "Brain-computer interfaces",
-      foundingYear: "2016",
-      innovations: ["Brain chips", "Neural interfaces"]
-    },
-    boringCompany: {
-      focus: "Underground transportation",
-      foundingYear: "2016",
-      innovations: ["Underground tunnels", "Loop system"]
-    },
-    x: {
-      focus: "Social media platform (formerly Twitter)",
-      acquiredYear: "2022",
-      innovations: ["Free speech platform", "Digital town square"]
-    }
+    pacing: 'flexible',
+    repetition: true,
+    visualSupport: true,
+    audioSupport: true
   },
-  background: {
-    education: ["University of Pennsylvania", "Stanford University (briefly)"],
-    earlyLife: "Born in Pretoria, South Africa",
-    entrepreneurialJourney: ["Zip2", "X.com", "PayPal"],
-    personalPhilosophy: ["First principles thinking", "Long-term vision", "Multi-planetary species"]
+  adhd: {
+    contentStyle: {
+      shortLessons: true,
+      structuredTasks: true,
+      minimalDistractions: true,
+      visualTimers: true,
+      progressChecks: true,
+      gamification: true,
+      interactiveTasks: true
+    },
+    pacing: 'dynamic',
+    breakFrequency: 'high',
+    multimodal: true
+  },
+  visualImpairment: {
+    contentStyle: {
+      highContrast: true,
+      textDescriptions: true,
+      audioTranscripts: true,
+      screenReaderOpt: true,
+      audioLessons: true,
+      fullAccessibility: true
+    },
+    pacing: 'self-directed',
+    audioDetail: 'high',
+    textToSpeech: true
+  },
+  languageLearner: {
+    contentStyle: {
+      simplifiedText: true,
+      vocabularyFocus: true,
+      bilingualContent: true,
+      practiceExercises: true,
+      culturalNotes: true,
+      immersiveLearning: true
+    },
+    pacing: 'gradual',
+    languageSupport: true,
+    culturalContext: true
   }
 };
 
-export async function GET(req) {
-  const subject = req.nextUrl.searchParams.get("subject") || "physics";
-  const topic = req.nextUrl.searchParams.get("topic") || "Rocket Science";
-  const difficultyLevel = req.nextUrl.searchParams.get("difficulty") || "medium";
-
-  // Initialize the model
-  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-  const prompt = `
-You are Elon Musk AI Tutor, a revolutionary educator who combines expertise from Tesla, SpaceX, Neuralink, and other ventures to explain concepts through the lens of real-world innovation and entrepreneurship.
-
-Key characteristics:
-- Use first principles thinking to break down complex topics
-- Reference actual projects from Tesla, SpaceX, and other companies
-- Share personal anecdotes from your entrepreneurial journey
-- Incorporate your known communication style (direct, technical, occasionally humorous)
-- Reference your relationships with your children (teaching methods you use with them)
-- Include your views on education and learning (self-taught, practical application)
-- Use examples from your companies' real innovations
-
-Teaching topic: "${topic}" (${difficultyLevel} level) in ${subject}
-
-Please provide a response in JSON format that includes:
-{
-  "topic": {
-    "name": "Main topic name",
-    "firstPrinciplesBreakdown": ["Core fundamental elements"],
-    "relevanceToFuture": "How this connects to making humanity multiplanetary or sustainable"
+// Academic systems and adaptations
+const academicSystems = {
+  basic: {
+    structure: 'fundamental',
+    assessment: 'progress-based',
+    pacing: 'flexible',
+    support: 'community-based',
+    evaluationMethod: 'continuous',
+    teachingStyle: 'hands-on'
   },
-  "explanation": {
-    "mainConcept": {
-      "description": "Core concept explained through first principles",
-      "elonPerspective": "Your unique take on this concept",
-      "companyConnection": "How this relates to Tesla/SpaceX/other ventures"
-    },
-    "realWorldApplications": [
-      {
-        "company": "Which of your companies uses this",
-        "application": "How it's applied",
-        "innovation": "What innovation it enabled"
-      }
-    ],
-    "personalInsights": {
-      "experience": "Personal story related to learning/applying this",
-      "challenge": "How you overcame related challenges",
-      "advice": "Your advice for mastering this concept"
-    }
+  standard: {
+    structure: 'grade-based',
+    assessment: 'regular',
+    pacing: 'structured',
+    support: 'teacher-guided',
+    evaluationMethod: 'mixed',
+    teachingStyle: 'balanced'
   },
-  "practicalExercises": {
-    "engineeringChallenges": [
-      {
-        "scenario": "Real problem from Tesla/SpaceX/etc",
-        "approach": "How to solve using first principles",
-        "solution": "Step-by-step solution with engineering focus"
-      }
-    ],
-    "innovationTasks": [
-      {
-        "challenge": "Forward-thinking problem to solve",
-        "hints": "Guidance based on your experience",
-        "sustainabilityAngle": "Connection to sustainable future"
-      }
-    ]
-  },
-  "futurePerspectives": {
-    "industryImpact": "How this knowledge shapes future industries",
-    "marsColonization": "Relevance to Mars colonization if applicable",
-    "sustainabilityGoals": "Connection to sustainable energy future",
-    "aiImplications": "How AI might transform this field"
-  },
-  "learningResources": {
-    "recommendedBooks": ["Books you've mentioned reading on this topic"],
-    "twitterPosts": ["Your relevant tweets about this subject"],
-    "companyDocs": ["Related documentation from your companies"],
-    "interviews": ["Relevant interviews where you discussed this"]
+  advanced: {
+    structure: 'comprehensive',
+    assessment: 'continuous',
+    pacing: 'adaptive',
+    support: 'multi-modal',
+    evaluationMethod: 'diverse',
+    teachingStyle: 'investigative'
   }
-}
+};
 
-Personality traits to maintain:
-1. Direct and technically precise communication
-2. Focus on first principles thinking
-3. Long-term, ambitious perspective
-4. Occasional dry humor or memes
-5. References to rocket science and sustainable energy
-6. Emphasis on practical application over theory
-7. Connection to making humanity a multi-planetary species
-8. Integration of AI and technology in solutions`;
-
+// Helper function to fetch relevant images from Wikimedia
+async function fetchWikimediaImages(searchTerm, limit = 3) {
   try {
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const processedResponse = JSON.parse(response.text());
-    
-    return Response.json(processedResponse);
+    const response = await axios.get(WIKIMEDIA_API, {
+      params: {
+        action: 'query',
+        format: 'json',
+        generator: 'search',
+        gsrsearch: ${searchTerm} haswbstatement:P180,
+        gsrlimit: limit,
+        prop: 'imageinfo',
+        iiprop: 'url|extmetadata',
+        iiurlwidth: 800,
+        origin: '*'
+      }
+    });
+
+    if (!response.data.query?.pages) {
+      return [];
+    }
+
+    return Object.values(response.data.query.pages)
+      .map(page => ({
+        title: page.title,
+        url: page.imageinfo?.[0]?.url,
+        description: page.imageinfo?.[0]?.extmetadata?.ImageDescription?.value,
+        license: page.imageinfo?.[0]?.extmetadata?.License?.value
+      }))
+      .filter(img => img.url && !img.url.endsWith('.svg'));
   } catch (error) {
-    console.error('Error:', error);
-    return Response.json({ 
-      error: 'Failed to generate response',
-      message: 'Unable to connect to neural link. Please try again later.',
-      errorDetails: error.message
-    }, { status: 500 });
+    console.error('Wikimedia fetch error:', error);
+    return [];
   }
 }
+
+// Helper function to structure content with images
+async function structureContentWithImages(content, searchTerms, userProfile) {
+  const needsVisualSupport = userProfile.learningNeeds.some(need => 
+    ['dyslexia', 'adhd', 'languageLearner'].includes(need)
+  );
+
+  if (!needsVisualSupport) {
+    return { content, images: [] };
+  }
+
+  const allImages = [];
+  const contentSections = content.split('\n\n');
+  const enhancedSections = [];
+
+  for (const section of contentSections) {
+    enhancedSections.push(section);
+
+    const keyTerms = searchTerms.filter(term => 
+      section.toLowerCase().includes(term.toLowerCase())
+    );
+
+    if (keyTerms.length > 0) {
+      const sectionImages = await fetchWikimediaImages(keyTerms[0]);
+      if (sectionImages.length > 0) {
+        allImages.push(...sectionImages);
+        enhancedSections.push([Visual Aid: ${sectionImages[0].title}]);
+      }
+    }
+  }
+
+  return {
+    content: enhancedSections.join('\n\n'),
+    images: allImages
+  };
+}
+
+// Generate adaptive learning prompt
+function generateAdaptiveLearningPrompt(userProfile) {
+  const {
+    learningNeeds,
+    culturalBackground,
+    academicLevel,
+    interests,
+    learningGoals,
+    languagePreference,
+    communityResources
+  } = userProfile;
+
+  return `You are an adaptive AI tutor specialized in personalized education.
+
+LEARNING ADAPTATIONS:
+${learningNeeds.map(need => `
+${need.toUpperCase()} Accommodations:
+${Object.entries(learningProfiles[need].contentStyle)
+  .map(([key, value]) => - ${key}: ${value})
+  .join('\n')}
+Pacing: ${learningProfiles[need].pacing}
+`).join('\n')}
+
+CULTURAL CONTEXT:
+- Background: ${culturalBackground}
+- Language: ${languagePreference}
+- Community Resources: ${communityResources.join(', ')}
+
+ACADEMIC FRAMEWORK:
+- Level: ${academicLevel}
+- Structure: ${academicSystems[academicLevel].structure}
+- Assessment: ${academicSystems[academicLevel].assessment}
+- Teaching Style: ${academicSystems[academicLevel].teachingStyle}
+- Support System: ${academicSystems[academicLevel].support}
+
+PERSONALIZATION:
+- Interests: ${interests.join(', ')}
+- Learning Goals: ${learningGoals.join(', ')}
+
+TEACHING APPROACH:
+1. Use culturally relevant examples
+2. Focus on practical applications
+3. Include community-based learning
+4. Provide multiple explanation approaches
+5. Adapt to learning needs
+
+RESPONSE GUIDELINES:
+1. Maintain clear structure
+2. Include practical exercises
+3. Provide concrete examples
+4. Include collaborative activities
+5. Support various learning styles
+
+CONTENT STRUCTURING:
+1. Break into manageable segments
+2. Include clear summaries
+3. Provide practice materials
+4. Support group learning activities
+5. Enable progress tracking
+
+Current topic: `;
+}
+
+// Enhanced response generator with visual support
+async function generateEnhancedResponse(message, userProfile) {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const systemPrompt = generateAdaptiveLearningPrompt(userProfile);
+    
+    const chat = model.startChat({
+      history: [],
+      generationConfig: getGenerationConfig(userProfile),
+    });
+
+    const formattedMessage = `${systemPrompt}
+
+Question/Topic: ${message}
+
+Please provide a response that:
+1. Uses examples relevant to ${userProfile.culturalBackground}
+2. Supports ${userProfile.learningNeeds.join(', ')} learning needs
+3. Connects to student interests: ${userProfile.interests.join(', ')}
+4. Aligns with ${userProfile.academicLevel} academic level
+5. Incorporates cultural context and understanding
+6. Provides practical applications and examples
+7. Includes collaborative learning opportunities
+8. Supports multiple learning styles`;
+
+    // Generate initial response
+    const result = await chat.sendMessage(formattedMessage);
+    const textResponse = result.response.text();
+
+    // Extract key terms for image search
+    const keyTermsPrompt = Extract 3-5 key terms or concepts from this text that would benefit from visual representation:\n${textResponse};
+    const keyTermsResult = await chat.sendMessage(keyTermsPrompt);
+    const searchTerms = keyTermsResult.response.text().split('\n').map(term => term.trim());
+
+    // Structure content with images
+    const enhancedContent = await structureContentWithImages(
+      textResponse,
+      searchTerms,
+      userProfile
+    );
+
+    return enhancedContent;
+  } catch (error) {
+    console.error('Enhanced response generation error:', error);
+    throw new Error('Failed to generate enhanced response');
+  }
+}
+
+// Text to Speech functionality
+async function generateAudioResponse(text, userProfile) {
+  try {
+    const client = new TextToSpeechClient();
+    
+    const getSpeechParams = (profile) => {
+      const params = {
+        rate: 1.0,
+        pitch: 0,
+        volumeGainDb: 0
+      };
+
+      if (profile.learningNeeds.includes('dyslexia')) {
+        params.rate = 0.85;
+        params.pitch = -1;
+      }
+
+      if (profile.learningNeeds.includes('visualImpairment')) {
+        params.rate = 0.95;
+        params.volumeGainDb = 1;
+      }
+
+      return params;
+    };
+
+    const speechParams = getSpeechParams(userProfile);
+
+    const request = {
+      input: { text },
+      voice: {
+        languageCode: userProfile.languagePreference,
+        ssmlGender: 'NEUTRAL'
+      },
+      audioConfig: {
+        audioEncoding: 'MP3',
+        speakingRate: speechParams.rate,
+        pitch: speechParams.pitch,
+        volumeGainDb: speechParams.volumeGainDb
+      },
+    };
+
+    const [response] = await client.synthesizeSpeech(request);
+    return response.audioContent;
+  } catch (error) {
+    console.error('Audio generation error:', error);
+    throw new Error('Failed to generate audio response');
+  }
+}
+
+// Configuration generator for AI model
+function getGenerationConfig(profile) {
+  const config = {
+    temperature: 0.7,
+    maxOutputTokens: 1500,
+  };
+
+  if (profile.learningNeeds.includes('dyslexia')) {
+    config.temperature = 0.3;
+    config.maxOutputTokens = 1000;
+  }
+
+  if (profile.learningNeeds.includes('languageLearner')) {
+    config.temperature = 0.4;
+    config.maxOutputTokens = 1200;
+  }
+
+  return config;
+}
+
+// Route handlers
+router.post('/learn', authenticateRequest, express.json(), async (req, res) => {
+  try {
+    const { text, userProfile } = req.body;
+
+    if (!text || !userProfile) {
+      return res.status(400).json({
+        error: 'Missing required information',
+        details: {
+          text: !text ? 'Text is required' : null,
+          userProfile: !userProfile ? 'User profile is required' : null
+        }
+      });
+    }
+
+    // Validate user profile
+    const requiredFields = ['learningNeeds', 'culturalBackground', 'academicLevel', 'interests', 'learningGoals'];
+    const missingFields = requiredFields.filter(field => !userProfile[field]);
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        error: 'Incomplete user profile',
+        missingFields
+      });
+    }
+
+    // Generate enhanced response
+    const response = await generateEnhancedResponse(text, userProfile);
+
+    // Generate audio if needed
+    let audioResponse = null;
+    if (userProfile.learningNeeds.includes('visualImpairment') || 
+        userProfile.learningNeeds.includes('dyslexia')) {
+      audioResponse = await generateAudioResponse(response.content, userProfile);
+    }
+
+    // Format response
+    const formattedResponse = {
+      success: true,
+      response: {
+        text: response.content,
+        images: response.images.map(img => ({
+          url: img.url,
+          description: img.description,
+          title: img.title
+        })),
+        audio: audioResponse ? audioResponse.toString('base64') : null
+      },
+      metadata: {
+        adaptations: userProfile.learningNeeds.map(need => ({
+          type: need,
+          features: Object.keys(learningProfiles[need].contentStyle)
+        })),
+        visualSupport: response.images.length > 0,
+        audioSupport: !!audioResponse,
+        contentType: 'multimodal'
+      }
+    };
+
+    res.json(formattedResponse);
+
+  } catch (error) {
+    console.error('Learning route error:', error);
+    res.status(500).json({ 
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
+
+// Image preview route
+router.get('/preview-images/:term', authenticateRequest, async (req, res) => {
+  try {
+    const { term } = req.params;
+    const images = await fetchWikimediaImages(term, 5);
+    
+    res.json({
+      success: true,
+      images: images.map(img => ({
+        url: img.url,
+        title: img.title,
+        description: img.description,
+        license: img.license
+      }))
+    });
+  } catch (error) {
+    console.error('Image preview error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+module.exports = router;
